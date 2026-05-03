@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SKY GYM - الإدارة الذكية</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -10,20 +11,20 @@
 <style>
 /* التصميم العام */
 body{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial;
     margin:0;
     padding:20px;
     color:white;
     background: url("skygem.png") no-repeat center center fixed;
     background-size: cover;
-    filter: brightness(1.1) contrast(1.1);
+    filter: brightness(1.15) contrast(1.1);
 }
 
 .overlay{
     position:fixed;
     top:0;left:0;
     width:100%;height:100%;
-    background: linear-gradient(rgba(255,255,255,0.05), rgba(0,0,0,0.92));
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.9));
     z-index:-1;
 }
 
@@ -77,21 +78,12 @@ button{
 
 button:hover { opacity: 0.9; transform: scale(0.98); }
 
-.durationBox{ display:flex; gap:5px; margin-top: 5px; }
-.durationBox button{
-    flex:1;
-    background:#222;
-    font-size:12px;
-    border: 1px solid #444;
-}
-
-/* 💠 شبكة الكروت - صفين */
+/* شبكة الكروت */
 #list {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     margin-top: 25px;
-    justify-content: space-between;
 }
 
 .card{
@@ -102,6 +94,7 @@ button:hover { opacity: 0.9; transform: scale(0.98); }
     border-radius: 15px;
     width: calc(50% - 8px); 
     box-sizing: border-box;
+    position: relative;
 }
 
 @media (max-width: 768px) { .card { width: 100%; } }
@@ -117,13 +110,23 @@ button:hover { opacity: 0.9; transform: scale(0.98); }
     border-radius: 6px;
     margin-top: 10px;
     font-weight: bold;
+    cursor: pointer;
+}
+
+.edit-icon {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    color: #00bfff;
+    cursor: pointer;
+    font-size: 18px;
 }
 
 .green{color:#00ff88; font-weight: bold;}
 .yellow{color:yellow; font-weight: bold;}
 .red{color:#ff4444; font-weight: bold;}
 
-/* 🛠️ خانة المطور */
+/* خانة المطور */
 .developer-box {
     margin-top: 50px;
     text-align: center;
@@ -147,10 +150,9 @@ button:hover { opacity: 0.9; transform: scale(0.98); }
     transition: 0.3s;
     text-decoration: none;
 }
-.fa-facebook { color: #1877F2; }
+.fa-whatsapp { color: #25D366; }
 .fa-instagram { color: #E4405F; }
 .fa-telegram { color: #26A5E4; }
-.social-icons a:hover { transform: scale(1.2); filter: brightness(1.2); }
 
 </style>
 </head>
@@ -176,13 +178,10 @@ button:hover { opacity: 0.9; transform: scale(0.98); }
         <input id="name" placeholder="الاسم الكامل">
         <div class="row">
             <input id="phone" placeholder="رقم الموبايل">
-            <input id="address" placeholder="العنوان">
+            <input id="age" type="number" placeholder="العمر">
         </div>
         <div class="row">
-            <select id="gender">
-                <option value="ذكر">ذكر</option>
-                <option value="أنثى">أنثى</option>
-            </select>
+            <input id="address" placeholder="العنوان">
             <select id="goal">
                 <option value="كمال أجسام">كمال أجسام</option>
                 <option value="فيتنس">فيتنس</option>
@@ -193,13 +192,6 @@ button:hover { opacity: 0.9; transform: scale(0.98); }
             <input type="number" id="paid" placeholder="المبلغ المدفوع">
             <input type="number" id="rem" placeholder="المبلغ المتبقي">
         </div>
-        <input type="number" id="customDays" placeholder="أدخل عدد الأيام يدوياً">
-        <div class="durationBox">
-            <button onclick="setDays(30)">شهر</button>
-            <button onclick="setDays(60)">شهرين</button>
-            <button onclick="setDays(90)">3 شهور</button>
-        </div>
-        <div id="selectedDays" style="text-align:center; margin-top:8px; font-size:12px; color:#aaa;">لم يتم اختيار مدة</div>
         <button onclick="addMember()">✅ تسجيل المشترك</button>
     </div>
 
@@ -210,7 +202,7 @@ button:hover { opacity: 0.9; transform: scale(0.98); }
         <p><b>𝓗𝓪𝓷𝔂 𝓐𝓵-𝓦𝓪𝓻𝓯𝓪𝓵𝓲</b></p>
         
         <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="https://wa.me/201108965033" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
             <a href="https://instagram.com/hann._.oon" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
             <a href="https://t.me/ahm_ragel" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
         </div>
@@ -220,16 +212,13 @@ button:hover { opacity: 0.9; transform: scale(0.98); }
 </div>
 
 <script>
-// الإعدادات
 const PASSWORD = "112233";
 const SUPABASE_URL = "https://zncxqfmyzizmnlteraai.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpuY3hxZm15eml6bW5sdGVyYWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0ODg5MzYsImV4cCI6MjA5MzA2NDkzNn0.NIFeW3eGwZ5TqYEzj0b5Rb3jsbkyrfLS1C6mz2aZY2U";
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let members = [];
-let selectedDays = 0;
 
-// الدخول
 function login(){
     if(document.getElementById("pass").value === PASSWORD){
         document.getElementById("loginBox").style.display="none";
@@ -240,67 +229,72 @@ function login(){
     }
 }
 
-// تحميل البيانات
 async function loadMembers(){
     let { data, error } = await client.from("members").select("*").order('id', { ascending: false });
-    if(!error) { members = data || []; show(); notify(); }
+    if(!error) { 
+        members = data || []; 
+        show(); 
+        notify(); 
+    }
 }
 
-// تحديد المدة
-function setDays(d){
-    selectedDays = d;
-    document.getElementById("selectedDays").innerText = "تم تحديد " + d + " يوم";
-}
-
-// إضافة مشترك وتفريغ الحقول
 async function addMember(){
     let name = document.getElementById("name").value;
     let phone = document.getElementById("phone").value;
+    let age = document.getElementById("age").value;
     let address = document.getElementById("address").value;
-    let gender = document.getElementById("gender").value;
     let goal = document.getElementById("goal").value;
     let paid = document.getElementById("paid").value || 0;
     let rem = document.getElementById("rem").value || 0;
-    let custom = document.getElementById("customDays").value;
 
-    let days = custom ? Number(custom) : selectedDays;
-    if(!name || !phone || days <= 0){ alert("يرجى إكمال البيانات الأساسية"); return; }
+    if(!name || !phone){ alert("يرجى إدخال الاسم والهاتف"); return; }
 
     let now = Date.now();
-    let end = now + (days * 86400000);
+    let end = now + (30 * 86400000); // اشتراك 30 يوم تلقائياً
 
     const { error } = await client.from("members").insert([{
-        name, phone, address, gender, goal, paid, rem, start: now, end: end
+        name, phone, age, address, goal, paid, rem, start: now, end: end
     }]);
 
     if(!error){
-        // تفريغ الحقول بعد النجاح
-        ["name", "phone", "address", "paid", "rem", "customDays"].forEach(id => document.getElementById(id).value = "");
-        selectedDays = 0;
-        document.getElementById("selectedDays").innerText = "لم يتم اختيار مدة";
+        ["name", "phone", "age", "address", "paid", "rem"].forEach(id => document.getElementById(id).value = "");
         loadMembers();
     } else {
         alert("خطأ في الاتصال بقاعدة البيانات");
     }
 }
 
-// تجديد الاشتراك
+// دالة تعديل البيانات
+async function editMember(id){
+    let m = members.find(x => x.id === id);
+    let newName = prompt("تعديل الاسم:", m.name);
+    let newPhone = prompt("تعديل الهاتف:", m.phone);
+    let newAge = prompt("تعديل العمر:", m.age);
+    let newPaid = prompt("تعديل المدفوع:", m.paid);
+    let newRem = prompt("تعديل المتبقي:", m.rem);
+
+    if(newName){
+        await client.from("members").update({
+            name: newName, phone: newPhone, age: newAge, paid: newPaid, rem: newRem
+        }).eq("id", id);
+        loadMembers();
+    }
+}
+
 async function renew(id, currentEnd){
-    if(!confirm("تجديد الاشتراك لـ 30 يوم إضافي؟")) return;
+    if(!confirm("تجديد الاشتراك لمدة 30 يوم؟")) return;
     let now = Date.now();
     let newEnd = (currentEnd > now) ? currentEnd + (30 * 86400000) : now + (30 * 86400000);
     await client.from("members").update({end: newEnd}).eq("id", id);
     loadMembers();
 }
 
-// حذف مشترك
 async function del(id){
-    if(!confirm("هل أنت متأكد من الحذف؟")) return;
+    if(!confirm("حذف المشترك نهائياً؟")) return;
     await client.from("members").delete().eq("id", id);
     loadMembers();
 }
 
-// الإشعارات
 function notify(){
     let box = document.getElementById("notifyBox");
     let now = Date.now();
@@ -313,7 +307,6 @@ function notify(){
     box.innerHTML = msgs.length > 0 ? msgs.join("<br>") : "لا توجد تنبيهات حالياً";
 }
 
-// عرض الكروت (نظام الصفين)
 function show(){
     let list = document.getElementById("list");
     list.innerHTML="";
@@ -324,23 +317,31 @@ function show(){
     .forEach(m => {
         let diff = Math.ceil((m.end - now)/86400000);
         let color = diff <= 0 ? "red" : (diff <= 3 ? "yellow" : "green");
-        let status = diff <= 0 ? "منتهي" : (diff <= 3 ? "قرب يخلص" : "نشط");
+        
+        // رابط الواتساب للمشترك
+        let mWhatsApp = `https://wa.me/2${m.phone}`;
 
         list.innerHTML += `
         <div class='card'>
-            <div style="display:flex; justify-content:space-between;">
+            <i class="fas fa-edit edit-icon" onclick="editMember(${m.id})" title="تعديل"></i>
+            <div style="display:flex; justify-content:space-between; margin-right:25px;">
                 <b>${m.name}</b>
-                <span class="${color}">${status}</span>
+                <div>
+                   <a href="${mWhatsApp}" target="_blank" style="color:#25D366; margin-left:8px; font-size:18px;">
+                      <i class="fab fa-whatsapp"></i>
+                   </a>
+                   <span class="${color}">${diff <= 0 ? 'منتهي' : 'نشط'}</span>
+                </div>
             </div>
-            <div class="info-line">📍 ${m.address || 'بدون عنوان'}</div>
-            <div class="info-line">📞 ${m.phone} | ${m.gender}</div>
+            <div class="info-line">🎂 العمر: ${m.age || '--'} سنة</div>
+            <div class="info-line">📞 ${m.phone} | 📍 ${m.address || 'غير مسجل'}</div>
             <div class="info-line">🎯 الهدف: ${m.goal}</div>
             <div class="info-line" style="background:rgba(255,255,255,0.1); padding:4px; border-radius:4px;">
                 💰 مدفوع: ${m.paid} | متبقي: ${m.rem}
             </div>
             <div class="info-line">⏳ المتبقي: ${diff} يوم</div>
-            <div style="border-top:1px solid #333; margin-top:8px;">
-                <button class='smallBtn' onclick='renew(${m.id}, ${m.end})'>تجديد</button>
+            <div style="display:flex; gap:5px;">
+                <button class='smallBtn' onclick='renew(${m.id}, ${m.end})'>تجديد شهر</button>
                 <button class='smallBtn' style="background:#ff4444; color:white;" onclick='del(${m.id})'>حذف</button>
             </div>
         </div>`;
